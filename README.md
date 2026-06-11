@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# AI 상품 등록 도우미
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+이커머스 판매자를 위한 AI 카피 자동 생성 웹앱입니다.
+상품 사진과 기본 정보를 입력하면 AI가 상품명, 핵심 셀링포인트, 상세 설명, 추천 태그를 자동으로 작성해줍니다.
 
-Currently, two official plugins are available:
+## 주요 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 상품 사진 업로드 (드래그 앤 드롭 지원)
+- 등급, 원산지, 보관 방법, 배송 방식, 강조할 점 입력
+- AI 카피 자동 생성 (상품명 / 셀링포인트 3개 / 상세 설명 / 추천 태그)
+- 생성된 결과 인라인 편집
+- 항목별 클립보드 복사
 
-## React Compiler
+## 설계 원칙
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+AI는 입력된 사실과 사진에서 실제로 보이는 것만 사용합니다.
+입력되지 않은 항목은 추측하지 않고 `[입력 필요]` 형태로 남깁니다.
+과장·허위 광고를 방지하는 것이 이 프로젝트의 핵심 설계 기준입니다.
 
-## Expanding the ESLint configuration
+## 기술 스택
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **프론트엔드**: React 19 + TypeScript + Vite + Tailwind CSS v4
+- **AI**: GPT-4o (OpenAI Vision API)
+- **서버**: Vercel Serverless Function (`/api/generate`)
+- **배포**: Vercel
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 로컬 실행
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# 패키지 설치
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 환경변수 설정
+cp .env.example .env.local
+# .env.local에 OPENAI_API_KEY 입력
+
+# 개발 서버 실행
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 환경변수
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| 변수명 | 설명 |
+|--------|------|
+| `OPENAI_API_KEY` | OpenAI API 키 (서버리스 함수에서만 사용) |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 데이터 흐름
+
+```
+브라우저 (사진·정보 입력)
+  → Vercel 서버리스 함수 (API 키 보관, GPT-4o 호출)
+  → GPT-4o (사진 분석 + 카피 생성)
+  → 브라우저 (결과 표시·편집·복사)
 ```
