@@ -28,6 +28,7 @@ const INITIAL_FORM: ProductInput = {
 }
 
 export default function App() {
+  const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [form, setForm] = useState<ProductInput>(INITIAL_FORM)
   const [result, setResult] = useState<ProductResult | null>(null)
@@ -58,7 +59,7 @@ export default function App() {
               <h2 className="text-sm font-semibold text-gray-700 mb-3">상품 사진</h2>
               <ImageUpload
                 preview={preview}
-                onChange={(_, previewUrl) => setPreview(previewUrl)}
+                onChange={(f, previewUrl) => { setFile(f); setPreview(previewUrl) }}
               />
             </div>
 

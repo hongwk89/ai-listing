@@ -14,11 +14,17 @@ export function ImageUpload({ preview, onChange }: Props) {
     onChange(file, URL.createObjectURL(file))
   }
 
+  const handleDrop = (e:React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if(file) handleFile(file);
+  }
+
   return (
     <div
       className="border-2 border-dashed border-gray-200 rounded-xl overflow-hidden cursor-pointer hover:border-blue-400 transition-colors"
       onClick={() => inputRef.current?.click()}
-      onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
+      onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
     >
       {preview ? (
@@ -38,7 +44,7 @@ export function ImageUpload({ preview, onChange }: Props) {
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
+        onChange={(e) => { const file = e.target.files?.[0]; if (file) handleFile(file) }}
       />
     </div>
   )

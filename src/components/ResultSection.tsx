@@ -91,7 +91,15 @@ export function ResultSection({ result }: Props) {
         </div>
         <div className="flex flex-wrap gap-2">
           {edited.tags.map((tag, i) => (
-            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">#{tag}</span>
+            <span key={i} className="flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+              #{tag}
+              <button
+                onClick={() => setEdited(prev => ({ ...prev, tags: prev.tags.filter((_, idx) => idx !== i) }))}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                ×
+              </button>
+            </span>
           ))}
         </div>
       </div>
