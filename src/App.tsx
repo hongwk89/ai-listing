@@ -4,21 +4,6 @@ import { ProductForm } from './components/ProductForm'
 import { ResultSection } from './components/ResultSection'
 import type { ProductInput, ProductResult } from './types'
 
-const MOCK_RESULT: ProductResult = {
-  name: '제주 한라봉 5kg 특상품 · 산지직송',
-  sellingPoints: [
-    '당도 13브릭스 이상만 선별한 특상품 등급',
-    '수확 당일 산지직송, 최상의 신선도 보장',
-    '제주 청정지역 재배, 껍질이 얇고 과육이 풍부함'
-  ],
-  description: `제주도 청정 화산토에서 자란 한라봉입니다. 특상품 등급 기준인 당도 13브릭스 이상을 충족한 과실만 엄선하여 구성했습니다.
-
-수확 후 당일 산지직송 방식으로 출하하여 시중 유통 제품 대비 신선도가 높습니다. 껍질이 얇고 과육이 꽉 찬 한라봉 특유의 식감을 온전히 즐기실 수 있습니다.
-
-냉장 보관 시 2~3주, 실온 보관 시 1주일 이내 섭취를 권장합니다.`,
-  tags: ['제주한라봉', '한라봉5kg', '특상품', '산지직송', '신선과일', '선물용']
-}
-
 const INITIAL_FORM: ProductInput = {
   grade: '',
   origin: '',
@@ -34,13 +19,39 @@ export default function App() {
   const [result, setResult] = useState<ProductResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  // 나중에 실제 API 호출로 교체
   const handleGenerate = async () => {
+    if (!file) return
     setIsLoading(true)
     setResult(null)
-    await new Promise(r => setTimeout(r, 1500))
-    setResult(MOCK_RESULT)
-    setIsLoading(false)
+
+    try {
+      const base64 = await fileToBase64(file)
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64, mimeType: file.type, ...form })
+      })
+
+      if (!response.ok) {
+        const { error } = await response.json()
+        throw new Error(error)
+      }
+
+      setResult(await response.json())
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'AI 생성 중 오류가 발생했습니다.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve((reader.result as string).split(',')[1])
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
   }
 
   return (
