@@ -57,10 +57,7 @@ export function ProductForm({ value, onChange }: Props) {
       </div>
 
       <div>
-        <label className={labelClass}>
-          강조할 점
-          <span className="text-gray-400 font-normal ml-1">(선택)</span>
-        </label>
+        <label className={labelClass}>강조할 점</label>
         <textarea
           value={value.highlight}
           onChange={set('highlight')}

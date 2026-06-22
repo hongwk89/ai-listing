@@ -75,7 +75,7 @@ export default function App() {
             </div>
 
             <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">상품 정보</h2>
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">상품 정보 <span className="text-gray-400 font-normal text-xs">(optional)</span></h2>
               <ProductForm value={form} onChange={setForm} />
             </div>
 
